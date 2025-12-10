@@ -1,4 +1,3 @@
-// backend/server.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -11,12 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Root route (so you don't get "Cannot GET /")
+// Root route
 app.get("/", (req, res) => {
   res.send({ message: "Backend is running!" });
 });
 
-// Routes
+// Contact route
 app.use("/api/contact", contactRoutes);
 
 // Start server

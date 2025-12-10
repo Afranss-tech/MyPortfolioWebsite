@@ -1,22 +1,29 @@
 import express from "express";
-
-import { db } from "../database.js";
-
 const router = express.Router();
 
-// POST request to save contact messages
+let messages = [];
+
+// GET all messages
+router.get("/", (req, res) => {
+  res.json(messages);
+});
+
+// POST a new message
 router.post("/", (req, res) => {
   const { name, email, message } = req.body;
-
-  if (!name || !email || !message) {
+  if (!name || !email || !message)
     return res.status(400).json({ error: "All fields are required" });
-  }
 
-  const sql = "INSERT INTO contacts (name, email, message) VALUES (?, ?, ?)";
-  db.query(sql, [name, email, message], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Message sent successfully!" });
-  });
+  const newMessage = {
+    id: messages.length + 1,
+    name,
+    email,
+    message,
+    createdAt: new Date(),
+  };
+  messages.push(newMessage);
+
+  res.status(201).json({ message: "Message received", data: newMessage });
 });
 
 export default router;
