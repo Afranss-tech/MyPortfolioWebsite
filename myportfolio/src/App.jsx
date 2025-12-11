@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import HomeSection from "./components/sections/HomeSection";
 import AboutSection from "./components/sections/AboutSection";
@@ -8,10 +8,26 @@ import ResumeSection from "./components/sections/ResumeSection";
 import PortfolioSection from "./components/sections/PortfolioSection";
 import ServiceSection from "./components/sections/ServiceSection";
 import ContactSection from "./components/sections/ContactSection";
-import { MOCK_PROFILE } from "./data/mockData";
 
 function App() {
   const [activeSection, setActiveSection] = useState("home");
+
+  // 🚀 NEW: State to store backend data
+  const [profile, setProfile] = useState(null);
+
+  // 🚀 NEW: Fetch data from Render on page load
+  useEffect(() => {
+    fetch("https://your-backend-name.onrender.com/profile")
+      .then(res => res.json())
+      .then(data => {
+        console.log("API DATA:", data);
+        setProfile(data);
+      })
+      .catch(err => console.error("API ERROR:", err));
+  }, []);
+
+  // ⏳ Show loading until backend data arrives
+  if (!profile) return <h1 className="text-center mt-10">Loading...</h1>;
 
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -26,25 +42,22 @@ function App() {
 
       {/* FIXED SIDEBAR */}
       <Sidebar
-        profile={MOCK_PROFILE}
+        profile={profile}
         activeSection={activeSection}
         scrollToSection={scrollToSection}
       />
 
-
-      
-
       {/* MAIN CONTENT */}
       <main className="ml-64 w-full">
 
-        <HomeSection profile={MOCK_PROFILE} />
-        <AboutSection profile={MOCK_PROFILE} />
-        <SkillsSection skills={MOCK_PROFILE.skills} />
+        <HomeSection profile={profile} />
+        <AboutSection profile={profile} />
+        <SkillsSection skills={profile.skills} />
         <ResumeSection />
         <Certeficate/>
-        <PortfolioSection projects={MOCK_PROFILE.projects} />
-        <ServiceSection services={MOCK_PROFILE.services} />
-        <ContactSection contact={MOCK_PROFILE.contact} />
+        <PortfolioSection projects={profile.projects} />
+        <ServiceSection services={profile.services} />
+        <ContactSection contact={profile.contact} />
 
       </main>
     </div>
